@@ -5,8 +5,12 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 import os
 from twilio.rest import Client
+import time
+from dotenv import load_dotenv
 
-client = Client('AC895d3596813e53902e948ec2a240bb24', 'e8d7abf8285b0d9425e5b8c1068c6586')
+load_dotenv()
+
+client = Client(os.getenv('SID'),os.getenv('AUTH'))
 
 while True:
     driver = webdriver.Firefox()
@@ -80,13 +84,15 @@ while True:
     while "<tr>" in timeListString:
         timeListString = timeListString[timeListString.index("<tr>")+4:]
         div = timeListString[timeListString.index('<td style="width:60px;"')+4:]
-        time = div[div.index(">")+1:div.index("<")]
+        ferryTime = div[div.index(">")+1:div.index("<")]
 
-        if time in goodTimes:
+        if ferryTime in goodTimes:
             client.messages.create(from_='+18886128944',
                             to='+13103399837',
-                            body=f'{time} IS AVAILABLE. GO GET IT')
+                            body=f'{ferryTime} IS AVAILABLE. GO GET IT')
 
     driver.close()
+
+    print("done")
 
     time.sleep(300) #run every 5 minutes
